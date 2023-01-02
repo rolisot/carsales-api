@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  api:
+    image: carsales
+    container_name: api
+    build: ./
+    ports:
+      - '8080:8080'
+    mem_limit: 1024m
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15.1-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    mem_limit: 256m
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=carsales
+
+  prometheus:
+    image: prom/prometheus:latest
+    network_mode: host
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - './src/main/resources/prometheus:/etc/prometheus/'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    mem_limit: 128m
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:latest
+    pull_policy: always
+    network_mode: host
+    container_name: grafana
+    restart: unless-stopped
+    mem_limit: 128m
+    depends_on:
+      - prometheus
+
+volumes:
+  db:
+    driver: local

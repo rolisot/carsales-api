@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: springboot-carsales-api
+  output:
+    ansi:
+      enabled: ALWAYS
+  datasource:
+    url: jdbc:postgresql://postgres:5432/carsales
+    username: postgres
+    password: 123456
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    sql: debug
+
+server:
+  error:
+    include-stacktrace: ON_PARAM
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, metrics, prometheus
